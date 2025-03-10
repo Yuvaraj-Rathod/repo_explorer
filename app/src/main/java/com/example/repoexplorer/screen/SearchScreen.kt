@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,6 +44,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.repoexplorer.room.RepositoryEntity
 import com.example.repoexplorer.viewmodel.RepositoryViewModel
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.Alignment
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,13 +55,7 @@ fun SearchScreen(viewModel: RepositoryViewModel = hiltViewModel()) {
     val error by viewModel.error.collectAsState()
     var query by remember { mutableStateOf("")}
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Search Repositories") }
-            )
-        }
-    ) { innerPadding ->
+    Scaffold() { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -89,36 +86,79 @@ fun SearchScreen(viewModel: RepositoryViewModel = hiltViewModel()) {
     }
 }
 
+
 @Composable
 fun RepositoryItem(repo: RepositoryEntity) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        shape = RoundedCornerShape(8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Row(modifier = Modifier.padding(8.dp)) {
-            // Example: Load avatar with Coil (AsyncImage)
-            AsyncImage(
-                model = repo.owner.avatar_url,
-                contentDescription = "Owner Avatar",
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(text = repo.name, style = MaterialTheme.typography.titleMedium)
-                repo.description?.let {
-                    Text(text = it, style = MaterialTheme.typography.bodyMedium)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            // Left Column: Avatar and Stars below it
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AsyncImage(
+                    model = repo.owner.avatar_url,
+                    contentDescription = "Owner Avatar",
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Stars",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "${repo.stargazersCount}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            // Right Column: Title, Language (top right), and Description
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = repo.name,
+                        style = MaterialTheme.typography.titleMedium// Bigger title
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
                     if (!repo.language.isNullOrEmpty()) {
-                        Text(text = "Lang: ${repo.language}", style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            text = repo.language,
+                            style = MaterialTheme.typography.labelLarge
+                        )
                     }
-                    Text(text = "★ ${repo.stargazersCount}", style = MaterialTheme.typography.labelSmall)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                repo.description?.let { description ->
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }
     }
 }
+
+

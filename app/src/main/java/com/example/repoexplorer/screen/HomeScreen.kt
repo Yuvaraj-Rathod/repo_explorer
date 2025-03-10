@@ -27,6 +27,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.repoexplorer.room.RepositoryEntity
 import com.example.repoexplorer.viewmodel.RepositoryViewModel
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import com.example.repoexplorer.ui.theme.SlateBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,52 +43,31 @@ fun HomeScreen(
     onSearchClick: () -> Unit,
     viewModel: RepositoryViewModel = hiltViewModel()
 ) {
+    // Observe repositories and errors from ViewModel
     val repositories by viewModel.repositories.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    // Load some repos on entering the home screen (e.g., for "octocat").
     LaunchedEffect(Unit) {
-        viewModel.loadUserRepositories("octocat")
+        viewModel.loadUserRepositories("Yuvaraj-Rathod)")
     }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Home") },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        // TODO: e.g., open a drawer or handle a "home" action
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Home"
-                        )
-                    }
+            CustomAppBar(
+                title = "Repo Explorer",
+                onMenuClick = {
+                    // Handle leading icon click (e.g., open navigation drawer)
                 },
-                actions = {
-                    // First icon (example: favorite)
-                    IconButton(onClick = {
-                        // TODO: handle other action
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = "Favorite"
-                        )
-                    }
-                    // Second icon: search
-                    IconButton(onClick = {
-                        onSearchClick()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search"
-                        )
-                    }
+                onSearchClick = {
+                    onSearchClick()
+                },
+                onFavoriteClick = {
+
                 }
             )
         }
     ) { innerPadding ->
-        // Content area
+        // Content area remains the same.
         Box(modifier = Modifier.padding(innerPadding)) {
             if (!error.isNullOrEmpty()) {
                 Text(
@@ -97,4 +85,88 @@ fun HomeScreen(
         }
     }
 }
+
+
+@Composable
+fun CustomAppBar(
+    title: String,
+    onMenuClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    onSearchClick: () -> Unit
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        modifier = Modifier.fillMaxWidth().padding(top = 25.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 1.dp, vertical = 12.dp),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            // Leading Elevated Icon (Menu)
+            ElevatedIcon(
+                imageVector = Icons.Default.Menu,
+                contentDescription = "Menu",
+                onClick = onMenuClick
+            )
+            // Title Text centered
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
+            // Trailing Elevated Icon (Favorite)
+            ElevatedIcon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = "Favorite",
+                onClick = onFavoriteClick
+            )
+            // Trailing Elevated Icon (Search)
+            ElevatedIcon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                onClick = onSearchClick
+            )
+        }
+    }
+}
+@Composable
+fun ElevatedIcon(
+    imageVector: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(42.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(8.dp),
+                clip = false
+            )
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            shape = RoundedCornerShape(8.dp),
+            color = SlateBlue
+        ) {
+            IconButton(
+                onClick = onClick,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = imageVector,
+                    contentDescription = contentDescription,
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+    }
+}
+
+
 

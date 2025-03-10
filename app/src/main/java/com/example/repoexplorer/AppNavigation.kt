@@ -10,7 +10,6 @@ import com.example.repoexplorer.screen.SearchScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController = rememberNavController()) {
-
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen(onSearchClick = {
