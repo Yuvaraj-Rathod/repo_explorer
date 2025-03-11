@@ -20,9 +20,16 @@ class RepositoryViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    // Clears the error state.
+    fun clearError() {
+        _error.value = null
+    }
+
     // Load repositories from the network and cache them.
     fun loadUserRepositories(username: String) {
         viewModelScope.launch {
+            // Clear any existing error before starting a new request.
+            _error.value = null
             try {
                 val data = repository.fetchUserRepositories(username)
                 _repositories.value = data
@@ -42,6 +49,8 @@ class RepositoryViewModel @Inject constructor(
     // Search repositories via the network.
     fun searchRepositories(query: String) {
         viewModelScope.launch {
+            // Clear any previous error.
+            _error.value = null
             try {
                 val data = repository.searchRepositories(query)
                 _repositories.value = data

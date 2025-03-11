@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "925228321351",
+    "project_id": "repoexplorer",
+    "storage_bucket": "repoexplorer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925228321351:android:8a79e9db14332cd20dff62",
+        "android_client_info": {
+          "package_name": "com.example.repoexplorer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "925228321351-s30puk5souast72ulo6u9028st5tpegv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.repoexplorer",
+            "certificate_hash": "1491a4b4033abe26745fc24d4bd00f4b2440b955"
+          }
+        },
+        {
+          "client_id": "925228321351-pjj12g7jkb1n5ac3a9untld6g8ndevsd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEe8jb93trcSDdVvbvLbMc_qA6CexDgbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "925228321351-pjj12g7jkb1n5ac3a9untld6g8ndevsd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

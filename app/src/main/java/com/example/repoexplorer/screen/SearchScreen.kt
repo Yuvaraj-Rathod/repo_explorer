@@ -46,6 +46,7 @@ import com.example.repoexplorer.room.RepositoryEntity
 import com.example.repoexplorer.viewmodel.RepositoryViewModel
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.Alignment
+import com.example.repoexplorer.ui.theme.CharcoalBlue
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,14 +87,14 @@ fun SearchScreen(viewModel: RepositoryViewModel = hiltViewModel()) {
     }
 }
 
-
 @Composable
 fun RepositoryItem(repo: RepositoryEntity) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 6.dp, vertical = 8.dp),
         shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = CharcoalBlue),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -138,7 +139,7 @@ fun RepositoryItem(repo: RepositoryEntity) {
                 ) {
                     Text(
                         text = repo.name,
-                        style = MaterialTheme.typography.titleMedium// Bigger title
+                        style = MaterialTheme.typography.titleMedium // Bigger title
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     if (!repo.language.isNullOrEmpty()) {

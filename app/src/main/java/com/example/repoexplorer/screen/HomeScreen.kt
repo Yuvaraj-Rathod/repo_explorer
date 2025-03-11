@@ -5,8 +5,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,50 +33,121 @@ import com.example.repoexplorer.viewmodel.RepositoryViewModel
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PersonSearch
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.example.repoexplorer.ui.theme.SlateBlue
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
+import com.example.repoexplorer.ui.theme.CharcoalBlue
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onSearchClick: () -> Unit,
+    onSignOut: () -> Unit,
     viewModel: RepositoryViewModel = hiltViewModel()
 ) {
-    // Observe repositories and errors from ViewModel
+    var username by remember { mutableStateOf("") }
+    var searchAttempted by remember { mutableStateOf(false) }
+    var showSearchField by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
     val repositories by viewModel.repositories.collectAsState()
     val error by viewModel.error.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadUserRepositories("Yuvaraj-Rathod)")
+        viewModel.loadCachedRepositories()
     }
 
     Scaffold(
         topBar = {
             CustomAppBar(
                 title = "Repo Explorer",
-                onMenuClick = {
-                    // Handle leading icon click (e.g., open navigation drawer)
-                },
-                onSearchClick = {
-                    onSearchClick()
-                },
-                onFavoriteClick = {
-
-                }
+                onUserSearch = { showSearchField = true },
+                onSignOut = { showLogoutDialog = true },
+                onSearchClick = { onSearchClick() }
             )
         }
     ) { innerPadding ->
-        // Content area remains the same.
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            if (showSearchField) {
+                TextField(
+                    value = username,
+                    onValueChange = { newText ->
+                        username = newText
+                        viewModel.clearError()
+                    },
+                    placeholder = { Text("Enter Username") },
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            if (username.isNotBlank()) {
+                                searchAttempted = true
+                                viewModel.loadUserRepositories(username)
+                                showSearchField = false
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.PersonSearch,
+                                contentDescription = "Search Username"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        containerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Logout confirmation dialog.
+            if (showLogoutDialog) {
+                AlertDialog(
+                    onDismissRequest = { showLogoutDialog = false },
+                    title = { Text("Sign Out") },
+                    text = { Text("Are you sure you want to sign out?") },
+                    confirmButton = {
+                        Button(onClick = {
+                            showLogoutDialog = false
+                            onSignOut()
+                        }) {
+                            Text("Yes")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showLogoutDialog = false }) {
+                            Text("No")
+                        }
+                    }
+                )
+            }
+
             if (!error.isNullOrEmpty()) {
                 Text(
                     text = "Error: $error",
                     color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            } else if (repositories.isEmpty() && searchAttempted) {
+                Text(
+                    text = "Username incorrect or not found",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -90,8 +164,8 @@ fun HomeScreen(
 @Composable
 fun CustomAppBar(
     title: String,
-    onMenuClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
+    onUserSearch: () -> Unit,
+    onSignOut: () -> Unit,
     onSearchClick: () -> Unit
 ) {
     Surface(
@@ -107,9 +181,9 @@ fun CustomAppBar(
         ) {
             // Leading Elevated Icon (Menu)
             ElevatedIcon(
-                imageVector = Icons.Default.Menu,
+                imageVector = Icons.Default.PersonSearch,
                 contentDescription = "Menu",
-                onClick = onMenuClick
+                onClick = onUserSearch
             )
             // Title Text centered
             Text(
@@ -117,18 +191,21 @@ fun CustomAppBar(
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center
             )
-            // Trailing Elevated Icon (Favorite)
-            ElevatedIcon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Favorite",
-                onClick = onFavoriteClick
-            )
+
             // Trailing Elevated Icon (Search)
             ElevatedIcon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
                 onClick = onSearchClick
             )
+
+            // Trailing Elevated Icon (Favorite)
+            ElevatedIcon(
+                imageVector = Icons.Default.Logout,
+                contentDescription = "Settings",
+                onClick = onSignOut
+            )
+
         }
     }
 }

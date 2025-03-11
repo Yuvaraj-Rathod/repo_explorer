@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -54,6 +55,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,22 +71,22 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-// Hilt for dependency injection
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    // Hilt for dependency injection
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
 
-// Room for offline caching
+    // Room for offline caching
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
-// Firebase Cloud Messaging
+     // Firebase Cloud Messaging
     implementation(libs.firebase.bom)
     implementation(libs.firebase.messaging)
 
-// Google Sign In (if using)
+     // Google Sign In (if using)
     implementation(libs.play.services.auth)
 
     //COIL
@@ -92,5 +97,8 @@ dependencies {
 
     //SystemUI
     implementation(libs.accompanist.systemuicontroller)
+
+    //Icons
+    implementation(libs.androidx.material.icons.extended)
 
 }
