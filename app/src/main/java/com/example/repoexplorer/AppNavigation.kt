@@ -8,6 +8,7 @@ import com.example.repoexplorer.screen.HomeScreen
 import com.example.repoexplorer.screen.SearchScreen
 import com.example.repoexplorer.screen.SignInScreen
 import androidx.navigation.compose.rememberNavController
+import com.example.repoexplorer.screen.UnavailableScreen
 
 @Composable
 fun AppNavigation(
@@ -19,10 +20,14 @@ fun AppNavigation(
         composable("sign_in") {
             SignInScreen(onSignInClick = onSignInClick)
         }
+        composable("404") {
+            UnavailableScreen(navController = navController)
+        }
         composable("home") {
             HomeScreen(
                 onSearchClick = { navController.navigate("search") },
-                onSignOut = onSignOutClick
+                onSignOut = onSignOutClick,
+                onFabClick = {navController.navigate("404")}
             )
         }
         composable("search") {

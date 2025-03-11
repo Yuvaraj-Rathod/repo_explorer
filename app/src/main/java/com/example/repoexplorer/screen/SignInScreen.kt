@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -22,7 +24,8 @@ fun SignInScreen(onSignInClick: () -> Unit) {
     ) {
         Text(
             text = "Sign in to continue",
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onSignInClick) {

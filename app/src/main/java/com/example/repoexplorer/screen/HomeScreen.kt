@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Folder
@@ -33,6 +34,7 @@ import com.example.repoexplorer.viewmodel.RepositoryViewModel
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -43,9 +45,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.example.repoexplorer.ui.theme.SlateBlue
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.unit.sp
 import com.example.repoexplorer.ui.theme.CharcoalBlue
+import com.example.repoexplorer.ui.theme.MidnightBlue
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +58,7 @@ import com.example.repoexplorer.ui.theme.CharcoalBlue
 fun HomeScreen(
     onSearchClick: () -> Unit,
     onSignOut: () -> Unit,
+    onFabClick: () -> Unit, // Callback for FAB click
     viewModel: RepositoryViewModel = hiltViewModel()
 ) {
     var username by remember { mutableStateOf("") }
@@ -75,6 +81,19 @@ fun HomeScreen(
                 onSignOut = { showLogoutDialog = true },
                 onSearchClick = { onSearchClick() }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onFabClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 15.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Archive, // Use any icon of your choice.
+                    contentDescription = "Profile",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     ) { innerPadding ->
         Column(
@@ -89,7 +108,7 @@ fun HomeScreen(
                         username = newText
                         viewModel.clearError()
                     },
-                    placeholder = { Text("Enter Username") },
+                    placeholder = { Text("Enter Username" , fontSize = 15.sp) },
                     trailingIcon = {
                         IconButton(onClick = {
                             if (username.isNotBlank()) {
@@ -160,7 +179,6 @@ fun HomeScreen(
     }
 }
 
-
 @Composable
 fun CustomAppBar(
     title: String,
@@ -169,13 +187,13 @@ fun CustomAppBar(
     onSearchClick: () -> Unit
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.background,
+        color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxWidth().padding(top = 25.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 1.dp, vertical = 12.dp),
+                .padding(horizontal = 0.dp, vertical = 12.dp),
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -188,8 +206,9 @@ fun CustomAppBar(
             // Title Text centered
             Text(
                 text = title,
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+                fontSize = 22.sp
             )
 
             // Trailing Elevated Icon (Search)
@@ -228,7 +247,7 @@ fun ElevatedIcon(
         Surface(
             modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(8.dp),
-            color = SlateBlue
+            color = MidnightBlue
         ) {
             IconButton(
                 onClick = onClick,

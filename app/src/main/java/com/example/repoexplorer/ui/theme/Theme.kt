@@ -33,7 +33,7 @@ fun RepoExplorer(content: @Composable () -> Unit) {
 
     if (!view.isInEditMode) {
         SideEffect {
-            systemUiController.setStatusBarColor(color = MidnightBlue)
+            systemUiController.setStatusBarColor(color = SlateBlue)
             systemUiController.setNavigationBarColor(color = MidnightBlue)
 //            systemUiController.isStatusBarVisible = false;
         }
