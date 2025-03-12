@@ -13,9 +13,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.repoexplorer.navigation.AppNavigation
 import com.example.repoexplorer.ui.theme.RepoExplorer
+import com.example.repoexplorer.viewmodel.FCMViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -38,49 +40,65 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Initialize FirebaseAuth.
+        // Initialize FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance()
 
-        // Configure Google Sign In options.
+        // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)) // from Firebase config
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        // Check if the user is already signed in.
+        // Check if user is already signed in
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null && firebaseAuth.currentUser != null) {
             Log.d("MainActivity", "Already signed in: ${account.email}")
             isSignedIn = true
         } else {
-            Log.d("MainActivity", "No signed in account found.")
+            Log.d("MainActivity", "No signed-in account found.")
         }
 
-        // Register sign in launcher.
+        // Register sign-in launcher
         signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 try {
                     val account = task.getResult(ApiException::class.java)
-                    Log.d("MainActivity", "Google sign in success: ${account?.email}")
+                    Log.d("MainActivity", "Google sign-in success: ${account?.email}")
                     val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
                     firebaseAuth.signInWithCredential(credential).addOnCompleteListener { authTask ->
                         isSignedIn = authTask.isSuccessful
                         Log.d("MainActivity", "Firebase auth success: $isSignedIn")
                     }
                 } catch (e: ApiException) {
-                    Log.e("MainActivity", "Sign in failed: ${e.statusCode}")
+                    Log.e("MainActivity", "Sign-in failed: ${e.statusCode}")
                     isSignedIn = false
                 }
             } else {
-                Log.e("MainActivity", "Sign in canceled or failed.")
+                Log.e("MainActivity", "Sign-in canceled or failed.")
             }
         }
 
         setContent {
             val navController = rememberNavController()
-            // Navigate to "home" when sign in succeeds.
+            val fcmViewModel: FCMViewModel = hiltViewModel()  // ✅ Inject FCMViewModel
+
+            // Fetch & log FCM Token
+            LaunchedEffect(Unit) {
+                fcmViewModel.token.collect { token ->
+                    token?.let {
+                        Log.d("FCM", "User FCM Token: $it")  // ✅ Check this in Logcat
+                    }
+                }
+            }
+
+            // Subscribe to a topic (e.g., "all_users")
+            LaunchedEffect(Unit) {
+                fcmViewModel.subscribeToTopic("all_users")  // ✅ Subscribing all users
+            }
+
+            // Navigate to home if signed in
             LaunchedEffect(isSignedIn) {
                 if (isSignedIn) {
                     navController.navigate("home") {
@@ -88,15 +106,19 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+
             RepoExplorer {
                 AppNavigation(
                     navController = navController,
                     onSignInClick = { signIn() },
                     onSignOutClick = {
-                        // Sign out from Firebase and update state.
+                        // Sign out from Firebase and Google
                         firebaseAuth.signOut()
+                        googleSignInClient.signOut()
+
                         isSignedIn = false
-                        // Navigate back to sign-in.
+
+                        // Navigate back to sign-in
                         navController.navigate("sign_in") {
                             popUpTo("home") { inclusive = true }
                         }
@@ -107,7 +129,7 @@ class MainActivity : ComponentActivity() {
     }
 
     fun signIn() {
-        // Optionally sign out first to force the account chooser.
+        // Sign out first to force the account chooser.
         googleSignInClient.signOut().addOnCompleteListener {
             signInLauncher.launch(googleSignInClient.signInIntent)
         }
