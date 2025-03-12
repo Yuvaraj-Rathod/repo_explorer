@@ -71,4 +71,4 @@ We use **GitLab CI/CD** to automatically:
 ### 📂 Drive Links:
 
 - [📥 Download APK](https://drive.google.com/file/d/1yS8HFnJ4_M8HhQLKWzauf1r87LgPnWED/view?usp=drive_link)
-- [▶️ Watch Video](https://drive.google.com/file/d/1yThGvYzMYJ1x_iw2PbqCmD4bCV-8Xmvt/view?usp=drive_link)
+- [▶️ Watch Video](https://drive.google.com/file/d/1yThGvYzMYJ1x_iw2PbqCmD4bCV-8Xmvt/view?usp=sharing)
